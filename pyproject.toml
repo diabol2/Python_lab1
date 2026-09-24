@@ -1,0 +1,10 @@
+[project]
+name = "Python_lab1"
+version = "1.0.0"
+description = "Математический калькулятор и конвертер величин"
+
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

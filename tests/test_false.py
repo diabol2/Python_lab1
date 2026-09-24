@@ -1,9 +1,9 @@
 import pytest
-from toolkit.converter import convert_units
-from toolkit.tokenizator import tokenize, normalize_unary
-from toolkit.rpn import to_rpn
-from toolkit.calculator import calculate_rpn_decimal
-from toolkit.errors import TokenizationError, ValidationError, CalculationError
+from src.toolkit.converter import convert_units
+from src.toolkit.tokenizator import tokenize, normalize_unary
+from src.toolkit.rpn import to_rpn
+from src.toolkit.calculator import calculate_rpn_decimal
+from src.toolkit.errors import TokenizationError, ValidationError, CalculationError
 
 
 def test_invalid_characters():

@@ -1,7 +1,7 @@
 
 import sys
 import pytest
-from toolkit.__main__ import main
+from src.toolkit.__main__ import main
 
 
 def test_cli_convert_success(monkeypatch, capsys):
