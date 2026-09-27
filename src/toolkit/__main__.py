@@ -1,19 +1,36 @@
 import argparse
 import sys
+import re
 from .rpn import to_rpn
 from .calculator import calculate_rpn_decimal
 from .tokenizator import tokenize, is_number, to_normal_view
 from .converter import convert_units
 from .errors import ToolkitError
 
+
 def to_float(exp: float) -> str:
-    """Форматирование вывода"""
-    float_result = f"{exp:.12f}".rstrip('0').rstrip('.')
+    """Форматирование вывода.
+
+    Обрабатывает полученное число (например из 5.0 делает просто 5).
+    Decimal делает вычисление точным, если число настолько крошечное, что
+    появляются E то функция это предотвращает и делает число полноценным.
+    """
+    float_result = f"{exp:.12f}".rstrip("0").rstrip(".")
+    if float_result == "0" or "e" in float_result.lower():
+        from decimal import Decimal
+        float_result = f"{Decimal(str(exp)):f}".rstrip("0").rstrip(".")
+
     return float_result
 
 
 def main():
-    """Точка входа в консольное приложение."""
+    """Главная функция для запуска программы из терминала.
+
+    Она настраивает интерфейс командной строки, чтобы программа понимала
+    три команды: "calc" (для калькулятора) и "convert" (для конвертера)
+    и --help (для справки).
+    Также функция ловит ошибки в процессе вычислений и выводит их на экран.
+    """
     parser = argparse.ArgumentParser(prog="Математический калькулятор и конвертер величин",
                                      epilog="Доступные команды:\n"
                                             "calc - Вычислить математическое выражение\n"
@@ -39,6 +56,7 @@ def main():
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     calc_parser = subparsers.add_parser("calc")
+    calc_parser._negative_number_matcher = re.compile(r'^-.+')
     calc_parser.add_argument("expression", type=str)
 
     conv_parser = subparsers.add_parser("convert")
