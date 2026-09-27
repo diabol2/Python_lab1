@@ -45,7 +45,7 @@ def test_cli_shows_help_message(monkeypatch):
 
 
 def test_cli_catches_toolkit_errors(monkeypatch, capsys):
-    """Проверяет, что внутренние ошибки (например, деление на ноль) красиво перехватываются и возвращают код 2."""
+    """Проверяет, что внутренние ошибки (например, деление на ноль) перехватываются и возвращают код 2."""
     monkeypatch.setattr(sys, "argv", ["__main__.py", "calc", "5 / 0"])
 
     with pytest.raises(SystemExit) as exc:
@@ -54,7 +54,7 @@ def test_cli_catches_toolkit_errors(monkeypatch, capsys):
     assert exc.value.code == 2
 
     captured = capsys.readouterr()
-    assert "Критическая ошибка: деление на ноль невозможно." in captured.err
+    assert "Ошибка вычисления: Деление на ноль невозможно" in captured.err
 
 
 def test_cli_calculates_correct_response(monkeypatch, capsys):
@@ -72,7 +72,7 @@ def test_cli_calculates_correct_response(monkeypatch, capsys):
 
 
 def test_cli_formats_small_float_correctly(monkeypatch, capsys):
-    """Проверяет, что дробные результаты выводятся в правильном формате без экспоненциальной записи."""
+    """Проверяет, что дробные результаты выводятся в правильном формате."""
     monkeypatch.setattr(sys, 'argv', ['__main__.py', 'calc', '1 / 1000000'])
 
     with pytest.raises(SystemExit) as exc:

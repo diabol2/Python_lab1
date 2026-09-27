@@ -1,11 +1,17 @@
 from decimal import Decimal, getcontext, ROUND_HALF_UP
-from .tokenizator import is_number, normalize_unary
+from .tokenizator import is_number, to_normal_view
 from .errors import CalculationError
 
 getcontext().prec = 10
 getcontext().rounding = ROUND_HALF_UP
 
+
 def calculate_rpn_decimal(rpn_tokens):
+    """Вычисляет математическое выражение, переданное в виде списка токенов ОПН.
+
+       Для выполнения операций используется стек. Чтобы избежать потери точности
+       при работе с плавающей точкой, все вычисления производятся с помощью Decimal.
+    """
     stack = []
 
     for token in rpn_tokens:
@@ -13,27 +19,27 @@ def calculate_rpn_decimal(rpn_tokens):
             stack.append(Decimal(token))
         else:
             if len(stack) < 2:
-                raise CalculationError("Математическая ошибка: оператору не хватает чисел для вычисления.")
+                raise CalculationError("Оператору не хватает чисел для вычисления")
 
             right = stack.pop()
             left = stack.pop()
 
-            if token == '+':
+            if token == "+":
                 result = left + right
-            elif token == '-':
+            elif token == "-":
                 result = left - right
-            elif token == '*':
+            elif token == "*":
                 result = left * right
-            elif token == '/':
+            elif token == "/":
                 if right == Decimal('0'):
-                    raise CalculationError("Критическая ошибка: деление на ноль невозможно.")
+                    raise CalculationError("Деление на ноль невозможно")
                 result = left / right
             else:
-                raise CalculationError(f"Синтаксическая ошибка: неизвестный оператор '{token}'.")
+                raise CalculationError(f"Неизвестный оператор: '{token}'")
 
             stack.append(result)
 
     if len(stack) != 1:
-        raise CalculationError("Синтаксическая ошибка: выражение составлено неверно (пропущен оператор).")
+        raise CalculationError("Выражение составлено неверно - пропущен оператор")
 
     return stack[0].normalize()

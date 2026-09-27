@@ -1,8 +1,10 @@
 from .errors import ValidationError
-from .tokenizator import is_number, normalize_unary
+from .tokenizator import is_number, to_normal_view
+
 
 def to_rpn(tokens):
-    precedence = {'+': 1, '-': 1, '*': 2, '/': 2}
+    """Формируем список токенов с помощью алгоритма ОПН для дальнейшего вычисления стеком."""
+    precedence = {"+": 1, "-": 1, "*": 2, "/": 2}
     output = []
     stack = []
     for token in tokens:
@@ -14,6 +16,7 @@ def to_rpn(tokens):
             stack.append(token)
         else:
             raise ValidationError(f"Неизвестный токен: {token}")
+
     while stack:
         output.append(stack.pop())
 

@@ -1,33 +1,32 @@
 import re
 from decimal import Decimal, getcontext, InvalidOperation
-from .errors import TokenizationError, ValidationError, CalculationError
+from .errors import TokenizationError, ValidationError
 
 getcontext().prec = 10
 
-TOKEN_PATTERN = r"\s*(\d+(?:\.\d+)?|[+*/\-])"
+token_pattern = r"\s*(\d+(?:\.\d+)?|[+*/\-])"
 
 def tokenize(expression):
+    """Разбиение полученного выражения на токены с помощью регулярных выражений (даже математически некорректных)."""
+    expression = expression.strip() # убрать лишние пробелы в конце
     tokens = []
     position = 0
-    length = len(expression)
 
-    while position < length:
-        match = re.match(TOKEN_PATTERN, expression[position:])
+    while position < len(expression):
+        match = re.match(token_pattern, expression[position:])
 
         if match is None:
             raise TokenizationError(f"Недопустимый символ на позиции {position}")
+        matched_group = match.group(1)
 
-        matched_value = match.group(1)
-
-        tokens.append(matched_value)
+        tokens.append(matched_group)
 
         position += match.end()
-
     return tokens
 
 
-
 def is_number(token):
+    """Проверка токена на то, является ли он числом."""
     try:
         Decimal(token)
         return True
@@ -35,16 +34,18 @@ def is_number(token):
         return False
 
 
-def normalize_unary(tokens):
+def to_normal_view(tokens):
+    """Преобразует унарные плюсы и минусы перед числами в единый знак, формирут удобный список токенов для ОПН,
+       а также проверяет полученный список токенов на корректность."""
     if not tokens:
         raise ValidationError("Ожидалось число")
 
     result = []
-    expect_number = True
+    number_flag = True
     i = 0
 
     while i < len(tokens):
-        if expect_number:
+        if number_flag:
             sign = 1
             while i < len(tokens) and tokens[i] in ("+", "-"):
                 if tokens[i] == "-":
@@ -56,28 +57,25 @@ def normalize_unary(tokens):
 
             number = tokens[i]
             if not is_number(number):
-                raise ValidationError(f"Ожидалось число, введите число вместо {number}")
-
+                raise ValidationError(f"Ожидалось число вместо {number}")
             if sign == -1:
                 result.append("-" + number)
             else:
                 result.append(number)
 
             i += 1
-            expect_number = False
+            number_flag = False
+
         else:
             token = tokens[i]
-            if token not in {"+", "-", "*", "/"}:
-                raise ValidationError(f"Ожидался оператор, получен {token}")
+            if token not in ("+", "-", "*", "/"):
+                raise ValidationError(f"Ожидался оператор вместо {token}")
 
             result.append(token)
             i += 1
-            expect_number = True
+            number_flag = True
 
-    if expect_number:
+    if number_flag:
         raise ValidationError("Ожидалось число")
 
     return result
-
-
-
