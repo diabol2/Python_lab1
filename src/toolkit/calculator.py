@@ -1,6 +1,7 @@
-from decimal import Decimal, getcontext, ROUND_HALF_UP
-from .tokenizator import is_number, to_normal_view
+from decimal import ROUND_HALF_UP, Decimal, getcontext
+
 from .errors import CalculationError
+from .tokenizator import is_number
 
 getcontext().prec = 10
 getcontext().rounding = ROUND_HALF_UP
@@ -31,7 +32,7 @@ def calculate_rpn_decimal(rpn_tokens):
             elif token == "*":
                 result = left * right
             elif token == "/":
-                if right == Decimal('0'):
+                if right == Decimal(0):
                     raise CalculationError("Деление на ноль невозможно")
                 result = left / right
             else:

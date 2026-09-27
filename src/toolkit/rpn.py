@@ -1,5 +1,5 @@
 from .errors import ValidationError
-from .tokenizator import is_number, to_normal_view
+from .tokenizator import is_number
 
 
 def to_rpn(tokens):

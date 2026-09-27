@@ -1,5 +1,6 @@
 import re
-from decimal import Decimal, getcontext, InvalidOperation
+from decimal import Decimal, InvalidOperation, getcontext
+
 from .errors import TokenizationError, ValidationError
 
 getcontext().prec = 10

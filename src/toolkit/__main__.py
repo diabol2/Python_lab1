@@ -1,11 +1,12 @@
 import argparse
-import sys
 import re
-from .rpn import to_rpn
+import sys
+
 from .calculator import calculate_rpn_decimal
-from .tokenizator import tokenize, is_number, to_normal_view
 from .converter import convert_units
 from .errors import ToolkitError
+from .rpn import to_rpn
+from .tokenizator import to_normal_view, tokenize
 
 
 def to_float(exp: float) -> str:
@@ -16,9 +17,16 @@ def to_float(exp: float) -> str:
     появляются E то функция это предотвращает и делает число полноценным.
     """
     float_result = f"{exp:.12f}".rstrip("0").rstrip(".")
-    if float_result == "0" or "e" in float_result.lower():
+    if float_result in ("0", "-0") or "e" in float_result.lower():
         from decimal import Decimal
-        float_result = f"{Decimal(str(exp)):f}".rstrip("0").rstrip(".")
+
+        res_dec = Decimal(str(exp))
+        if res_dec == 0:
+            res_dec = res_dec + Decimal(0)
+        float_result = f"{res_dec:f}".rstrip("0").rstrip(".")
+
+    if float_result == "-0":
+        float_result = "0"
 
     return float_result
 
@@ -83,14 +91,9 @@ def main():
             print(float_conv_result)
             sys.exit(0)
 
-    except ToolkitError as e:
+    except (ToolkitError, Exception) as e: # noqa: BLE001
         print(f"Ошибка вычисления: {e}", file=sys.stderr)
         sys.exit(2)
-
-    except Exception as e:
-        print(f"Ошибка вычисления: {e}", file=sys.stderr)
-        sys.exit(2)
-
 
 if __name__ == "__main__":
     main()

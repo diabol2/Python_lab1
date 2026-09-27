@@ -1,21 +1,22 @@
-from decimal import Decimal, getcontext, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal, getcontext
+
 from .errors import ConversionError
 
 getcontext().prec = 10
 getcontext().rounding = ROUND_HALF_UP
 
 conversion_rates = {
-    "g": Decimal("1"),
-    "kg": Decimal("1000"),
-    "mm": Decimal("1"),
-    "cm": Decimal("10"),
-    "dm": Decimal("100"),
-    "m": Decimal("1000"),
-    "km": Decimal("1000000"),
+    "g": Decimal(1),
+    "kg": Decimal(1000),
+    "mm": Decimal(1),
+    "cm": Decimal(10),
+    "dm": Decimal(100),
+    "m": Decimal(1000),
+    "km": Decimal(1000000),
 }
 
 absolute_zero_values = {
-    "k": Decimal("0"),
+    "k": Decimal(0),
     "c": Decimal("-273.15"),
     "f": Decimal("-459.67")
 }
@@ -52,7 +53,7 @@ def convert_units(input_value: str, source_unit: str, target_unit: str) -> Decim
     if source_mode == "c":
         celsius_temp = numeric_val
     elif source_mode == "f":
-        celsius_temp = (numeric_val - Decimal("32")) / Decimal("1.8")
+        celsius_temp = (numeric_val - Decimal(32)) / Decimal("1.8")
     elif source_mode == "k":
         celsius_temp = numeric_val - Decimal("273.15")
     else:
@@ -61,7 +62,7 @@ def convert_units(input_value: str, source_unit: str, target_unit: str) -> Decim
     if target_mode == "c":
         final_score = celsius_temp
     elif target_mode == "f":
-        final_score = (celsius_temp * Decimal("1.8")) + Decimal("32")
+        final_score = (celsius_temp * Decimal("1.8")) + Decimal(32)
     elif target_mode == "k":
         final_score = celsius_temp + Decimal("273.15")
     else:
